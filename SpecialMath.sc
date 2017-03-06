@@ -3,23 +3,35 @@ import scala.annotation.tailrec
 //When you run it from the command line, it takes one parameter. So `$> python specialMath.py 7` will produce `79`.
 // Also, `$> python specialMath.py 17` will produce `10926`. This question has two parts: first, convert it to Scala;
 // second, have the script calculate `$> specialMath 90`.
-val input = 0
-def specialMath(n: Long): Long = {
 
-  def specialMathHelper(n: Long, prev: Int = 0, next:Int = 1): Long = {
-    n match {
-      case 0 => prev
-      case 1 => next
-      case _ => n + specialMathHelper(n - 1) + specialMathHelper(n - 2)
+/**
+  * Cache to store the key value and then the special math value for that position.
+  * Avoids the overflow by just making everything a lookup instead of creating a new stackframe.
+  * Another way would be to use Tail Recursion.
+  */
+val cache = scala.collection.mutable.Map[Int, BigInt]()
+def specialMathCache(n: Int): BigInt = {
+
+  def cacheHelper(x: Int): BigInt = {
+    x match {
+      case 0 => 0
+      case 1 => 1
+      case n: Int => {
+        cache.getOrElse(n, {
+          val ret = n + specialMathCache(n - 1) + specialMathCache(n - 2)
+          cache(n) = ret
+          ret
+        })
+      }
     }
   }
-  specialMathHelper(n)
+  cacheHelper(n)
 }
-specialMath(input) == 0L
-specialMath(1) == 1L
-specialMath(2) == 3L
-specialMath(3) == 7L
-specialMath(4) == 14L
-specialMath(5) == 26L
-specialMath(6) == 46L
-specialMath(17) == 10926L
+specialMathCache(1)
+specialMathCache(2)
+specialMathCache(3)
+specialMathCache(4)
+specialMathCache(5)
+specialMathCache(6)
+specialMathCache(17)
+specialMathCache(90)

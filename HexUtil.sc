@@ -6,11 +6,8 @@ val hexString = "45766964696e74"
 val base64String = "RXZpZGludA== "
 
 
-class HexString(val s: String) {
-  def hex = BigInt.apply(s, 16)
-}
-implicit def str2hex(str: String): HexString = new HexString(str)
+def str2hex(str: String): BigInt = BigInt.apply(str, 16)
 
-val num: BigInt = hexString.hex
+val num: BigInt = str2hex(hexString)
 
 Base64Wrapper.encodeToString(num.toByteArray).trim == base64String.trim
